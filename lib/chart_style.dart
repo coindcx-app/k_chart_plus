@@ -159,27 +159,27 @@ class ChartColors {
 }
 
 class ChartStyle {
-  double topPadding = 30.0;
+  double topPadding = 18.0;
 
   double bottomPadding = 20.0;
 
-  double childPadding = 12.0;
+  double childPadding = 0.0;//12.0
 
   ///point-to-point distance
   double pointWidth = 11.0;
 
   ///candle width
-  double candleWidth = 8.5;
+  double candleWidth = 5.0;//8.5;
   double candleLineWidth = 1.0;
 
   ///vol column width
-  double volWidth = 8.5;
+  double volWidth = 5.0;//8.5;
 
   ///macd column width
   double macdWidth = 1.2;
 
   ///vertical-horizontal cross line width
-  double vCrossWidth = 8.5;
+  double vCrossWidth = 5.0;//8.5;
   double hCrossWidth = 0.5;
 
   ///(line length - space line - thickness) of the current price

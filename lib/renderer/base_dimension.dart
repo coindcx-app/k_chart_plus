@@ -33,7 +33,7 @@ class BaseDimension {
     required Set<SecondaryState> secondaryStateLi,
   }) {
     _mBaseHeight = mBaseHeight;
-    _mVolumeHeight = volHidden != true ? _mBaseHeight * 0.2 : 0;
+    _mVolumeHeight = volHidden != true ? _mBaseHeight * 0.1 : 0;
     _mSecondaryHeight = _mBaseHeight * 0.2;
     _mDisplayHeight = _mBaseHeight +
         _mVolumeHeight +

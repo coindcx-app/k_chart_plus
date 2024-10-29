@@ -30,8 +30,8 @@ class VolRenderer extends BaseChartRenderer<VolumeEntity> {
           Rect.fromLTRB(curX - r, top, curX + r, bottom),
           chartPaint
             ..color = curPoint.close > curPoint.open
-                ? this.chartColors.upColor
-                : this.chartColors.dnColor);
+                ? this.chartColors.upColor.withOpacity(0.5)
+                : this.chartColors.dnColor.withOpacity(0.5));
     }
 
     if (lastPoint.MA5Volume != 0) {
@@ -50,24 +50,24 @@ class VolRenderer extends BaseChartRenderer<VolumeEntity> {
 
   @override
   void drawText(Canvas canvas, VolumeEntity data, double x) {
-    TextSpan span = TextSpan(
-      children: [
-        TextSpan(
-            text: "VOL:${NumberUtil.format(data.vol)}    ",
-            style: getTextStyle(this.chartColors.volColor)),
-        if (data.MA5Volume.notNullOrZero)
-          TextSpan(
-              text: "MA5:${NumberUtil.format(data.MA5Volume!)}    ",
-              style: getTextStyle(this.chartColors.ma5Color)),
-        if (data.MA10Volume.notNullOrZero)
-          TextSpan(
-              text: "MA10:${NumberUtil.format(data.MA10Volume!)}    ",
-              style: getTextStyle(this.chartColors.ma10Color)),
-      ],
-    );
-    TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
-    tp.layout();
-    tp.paint(canvas, Offset(x, chartRect.top - topPadding));
+    // TextSpan span = TextSpan(
+    //   children: [
+    //     TextSpan(
+    //         text: "VOL:${NumberUtil.format(data.vol)}    ",
+    //         style: getTextStyle(this.chartColors.volColor)),
+    //     if (data.MA5Volume.notNullOrZero)
+    //       TextSpan(
+    //           text: "MA5:${NumberUtil.format(data.MA5Volume!)}    ",
+    //           style: getTextStyle(this.chartColors.ma5Color)),
+    //     if (data.MA10Volume.notNullOrZero)
+    //       TextSpan(
+    //           text: "MA10:${NumberUtil.format(data.MA10Volume!)}    ",
+    //           style: getTextStyle(this.chartColors.ma10Color)),
+    //   ],
+    // );
+    // TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
+    // tp.layout();
+    // tp.paint(canvas, Offset(x, chartRect.top - topPadding));
   }
 
   @override
