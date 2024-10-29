@@ -56,6 +56,7 @@ class KChartWidget extends StatefulWidget {
   final ChartColors chartColors;
   final ChartStyle chartStyle;
   final VerticalTextAlignment verticalTextAlignment;
+  final VerticalTextAlignment priveNowVerticalTextAlignment;
   final bool isTrendLine;
   final double xFrontPadding;
 
@@ -85,6 +86,7 @@ class KChartWidget extends StatefulWidget {
     this.flingCurve = Curves.decelerate,
     this.isOnDrag,
     this.verticalTextAlignment = VerticalTextAlignment.left,
+    this.priveNowVerticalTextAlignment = VerticalTextAlignment.right,
     this.mBaseHeight = 360,
   });
 
@@ -170,6 +172,7 @@ class _KChartWidgetState extends State<KChartWidget>
       fixedLength: widget.fixedLength,
       maDayList: widget.maDayList,
       verticalTextAlignment: widget.verticalTextAlignment,
+      priveNowVerticalTextAlignment: widget.priveNowVerticalTextAlignment,
     );
 
     return LayoutBuilder(
