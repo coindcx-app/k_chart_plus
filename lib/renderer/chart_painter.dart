@@ -421,21 +421,22 @@ class ChartPainter extends BaseChartPainter {
       this.chartColors.nowPriceTextColor,
     );
 
-    double offsetX = mWidth - tp.width;;
+    double offsetX = mWidth - tp.width;
     switch (priveNowVerticalTextAlignment) {
       case VerticalTextAlignment.right:
-        offsetX = mWidth - tp.width;
+        offsetX = mWidth  - tp.width;
         break;
       case VerticalTextAlignment.left:
         offsetX = 0;
         break;
     }
 
-    double top = y - tp.height / 2;
+    double padding = 2.0;
+    double top = y - tp.height / 2  - padding;
     canvas.drawRect(
-        Rect.fromLTRB(offsetX, top, offsetX + tp.width, top + tp.height),
+        Rect.fromLTRB(offsetX-4, top, offsetX + tp.width+4, top + tp.height + padding * 2),
         nowPricePaint);
-    tp.paint(canvas, Offset(offsetX, top));
+    tp.paint(canvas, Offset(offsetX-2, top + padding));
   }
 
   //For TrendLine
@@ -507,16 +508,40 @@ class ChartPainter extends BaseChartPainter {
     double x = getX(index);
     double y = getMainY(point.close);
     // K-line chart vertical line
-    canvas.drawLine(Offset(x, mTopPadding),
-        Offset(x, size.height - mBottomPadding), paintY);
+    // canvas.drawLine(Offset(x, mTopPadding),
+    //     Offset(x, size.height - mBottomPadding), paintY);
+    // K-line chart vertical dashed line
+    final double dashWidth = this.chartStyle.nowPriceLineLength; // Width of each dash
+    final double dashSpace = this.chartStyle.nowPriceLineSpan + this.chartStyle.nowPriceLineLength; // Space between dashes
+
+    double startY = mTopPadding;
+    // Calculate the total height of the line to draw
+    double totalHeight = size.height - mTopPadding;
+
+    while (startY < totalHeight) {
+      // Draw a dash
+      canvas.drawLine(Offset(x, startY), Offset(x, startY + dashWidth), paintY);
+      startY += dashWidth + dashSpace; // Move to the start of the next dash
+    }
 
     Paint paintX = Paint()
       ..color = this.chartColors.hCrossColor
       ..strokeWidth = this.chartStyle.hCrossWidth
       ..isAntiAlias = true;
     // K-line chart horizontal line
-    canvas.drawLine(Offset(-mTranslateX, y),
-        Offset(-mTranslateX + mWidth / scaleX, y), paintX);
+    // canvas.drawLine(Offset(-mTranslateX, y),
+    //     Offset(-mTranslateX + mWidth / scaleX, y), paintX);
+
+    // K-line chart horizontal dashed line
+    double startX = 0;
+    final max = -mTranslateX + mWidth / scaleX;
+    while (startX < max) {
+      canvas.drawLine(
+          Offset(startX, y),
+          Offset(startX + dashWidth, y),
+          paintX);
+      startX += dashWidth + dashSpace;
+    }
     if (scaleX >= 1) {
       canvas.drawOval(
         Rect.fromCenter(center: Offset(x, y), height: 2.0 * scaleX, width: 2.0),

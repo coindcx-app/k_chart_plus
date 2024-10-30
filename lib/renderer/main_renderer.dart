@@ -273,15 +273,27 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
   void drawGrid(Canvas canvas, int gridRows, int gridColumns) {
 //    final int gridRows = 4, gridColumns = 4;
     double rowSpace = chartRect.height / gridRows;
+    Paint rowPaint = gridPaint;
+    double rowWidth = chartRect.width - 50;
     for (int i = 0; i <= gridRows; i++) {
+      if(i == gridRows){
+        rowPaint = gridBorderPaint;
+        rowWidth = rowWidth + 50;
+      }
       canvas.drawLine(Offset(0, rowSpace * i + topPadding),
-          Offset(chartRect.width, rowSpace * i + topPadding), gridPaint);
+          Offset(rowWidth, rowSpace * i + topPadding), rowPaint);
     }
+
     double columnSpace = chartRect.width / gridColumns;
-    for (int i = 0; i <= columnSpace; i++) {
+    for (int i = 0; i < columnSpace; i++) {
+
       canvas.drawLine(Offset(columnSpace * i, topPadding / 3),
           Offset(columnSpace * i, chartRect.bottom), gridPaint);
     }
+
+    //drawing extra line at the right of graph
+    // canvas.drawLine( Offset(chartRect.width - 50, 0),  Offset(chartRect.width - 50, chartRect.bottom),
+    //     gridBorderPaint);
   }
 
   @override

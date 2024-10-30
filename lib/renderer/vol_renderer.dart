@@ -34,15 +34,15 @@ class VolRenderer extends BaseChartRenderer<VolumeEntity> {
                 : this.chartColors.dnColor.withOpacity(0.5));
     }
 
-    if (lastPoint.MA5Volume != 0) {
-      drawLine(lastPoint.MA5Volume, curPoint.MA5Volume, canvas, lastX, curX,
-          this.chartColors.ma5Color);
-    }
-
-    if (lastPoint.MA10Volume != 0) {
-      drawLine(lastPoint.MA10Volume, curPoint.MA10Volume, canvas, lastX, curX,
-          this.chartColors.ma10Color);
-    }
+    // if (lastPoint.MA5Volume != 0) {
+    //   drawLine(lastPoint.MA5Volume, curPoint.MA5Volume, canvas, lastX, curX,
+    //       this.chartColors.ma5Color);
+    // }
+    //
+    // if (lastPoint.MA10Volume != 0) {
+    //   drawLine(lastPoint.MA10Volume, curPoint.MA10Volume, canvas, lastX, curX,
+    //       this.chartColors.ma10Color);
+    // }
   }
 
   double getVolY(double value) =>
@@ -82,13 +82,18 @@ class VolRenderer extends BaseChartRenderer<VolumeEntity> {
 
   @override
   void drawGrid(Canvas canvas, int gridRows, int gridColumns) {
-    canvas.drawLine(Offset(0, chartRect.bottom),
-        Offset(chartRect.width, chartRect.bottom), gridPaint);
+    // gridPaint.color = Colors.red;
+    // canvas.drawLine(Offset(0, chartRect.bottom),
+    //     Offset(chartRect.width - 50, chartRect.bottom), gridPaint);
+
     double columnSpace = chartRect.width / gridColumns;
-    for (int i = 0; i <= columnSpace; i++) {
+    for (int i = 0; i < columnSpace; i++) {
       //vol垂直线
       canvas.drawLine(Offset(columnSpace * i, chartRect.top - topPadding),
           Offset(columnSpace * i, chartRect.bottom), gridPaint);
     }
+    //drawing extra line at the right of graph
+    canvas.drawLine( Offset(chartRect.width - 50, 0),  Offset(chartRect.width - 50, chartRect.bottom),
+        gridBorderPaint);
   }
 }

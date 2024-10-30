@@ -18,6 +18,11 @@ abstract class BaseChartRenderer<T> {
     ..filterQuality = FilterQuality.high
     ..strokeWidth = 0.5
     ..color = Color(0xff4c5c74);
+  Paint gridBorderPaint = Paint()
+    ..isAntiAlias = true
+    ..filterQuality = FilterQuality.high
+    ..strokeWidth = 0.5
+    ..color = Color(0xff4c5c74);
 
   BaseChartRenderer({
     required this.chartRect,
@@ -32,7 +37,8 @@ abstract class BaseChartRenderer<T> {
       minValue /= 2;
     }
     scaleY = chartRect.height / (maxValue - minValue);
-    gridPaint.color = gridColor;
+    gridPaint.color = gridColor.withOpacity(0.1);
+    gridBorderPaint.color = gridColor.withOpacity(0.3);
     // print("maxValue=====" + maxValue.toString() + "====minValue===" + minValue.toString() + "==scaleY==" + scaleY.toString());
   }
 

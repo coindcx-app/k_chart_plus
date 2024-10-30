@@ -166,7 +166,7 @@ class ChartStyle {
   double childPadding = 0.0;//12.0
 
   ///point-to-point distance
-  double pointWidth = 11.0;
+  double pointWidth = 7.0;
 
   ///candle width
   double candleWidth = 5.0;//8.5;
@@ -179,8 +179,8 @@ class ChartStyle {
   double macdWidth = 1.2;
 
   ///vertical-horizontal cross line width
-  double vCrossWidth = 5.0;//8.5;
-  double hCrossWidth = 0.5;
+  double vCrossWidth = 1.0;//8.5;
+  double hCrossWidth = 1.0;
 
   ///(line length - space line - thickness) of the current price
   double nowPriceLineLength = 4.5;
