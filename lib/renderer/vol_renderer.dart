@@ -82,9 +82,8 @@ class VolRenderer extends BaseChartRenderer<VolumeEntity> {
 
   @override
   void drawGrid(Canvas canvas, int gridRows, int gridColumns) {
-    // gridPaint.color = Colors.red;
-    // canvas.drawLine(Offset(0, chartRect.bottom),
-    //     Offset(chartRect.width - 50, chartRect.bottom), gridPaint);
+    canvas.drawLine(Offset(0, chartRect.bottom),
+        Offset(chartRect.width, chartRect.bottom), gridBorderPaint);
 
     double columnSpace = chartRect.width / gridColumns;
     for (int i = 0; i < columnSpace; i++) {
@@ -93,7 +92,7 @@ class VolRenderer extends BaseChartRenderer<VolumeEntity> {
           Offset(columnSpace * i, chartRect.bottom), gridPaint);
     }
     //drawing extra line at the right of graph
-    canvas.drawLine( Offset(chartRect.width - 50, 0),  Offset(chartRect.width - 50, chartRect.bottom),
+    canvas.drawLine( Offset(chartRect.width - 50, 0),  Offset(chartRect.width - 50, chartRect.bottom+50),
         gridBorderPaint);
   }
 }

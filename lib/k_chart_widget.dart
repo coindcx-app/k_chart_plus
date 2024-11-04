@@ -236,6 +236,7 @@ class _KChartWidgetState extends State<KChartWidget>
           onScaleUpdate: (details) {
             if (isDrag || isLongPress) return;
             mScaleX = (_lastScale * details.scale).clamp(0.5, 2.2);
+            print('onScaleUpdate $mScaleX');
             notifyChanged();
           },
           onScaleEnd: (_) {
@@ -294,7 +295,9 @@ class _KChartWidgetState extends State<KChartWidget>
                 size: Size(double.infinity, baseDimension.mDisplayHeight),
                 painter: _painter,
               ),
-              if (widget.showInfoDialog) _buildInfoDialog()
+              if (widget.showInfoDialog) _buildInfoDialog(),
+              if(mScrollX > 30.0) _buildResetScrollButton(),
+              // _buildResetZoomButton(),
             ],
           ),
         );
@@ -397,5 +400,37 @@ class _KChartWidgetState extends State<KChartWidget>
         );
       },
     );
+  }
+  
+  Widget _buildResetScrollButton() {
+    return Positioned(
+        bottom: 65.0,
+        right: 80.0,
+        child: Container(
+          color: widget.chartColors.resetReloadBackgroundColor,
+          padding: EdgeInsets.symmetric(horizontal: 4.0),
+          child: GestureDetector(
+            onTap: (){
+              mScrollX = 0.0;
+              notifyChanged();
+            }, child: Icon(Icons.fast_forward, size: 16.0, color: widget.chartColors.resetReloadForegroundColor,),),
+        ),);
+  }
+
+  Widget _buildResetZoomButton() {
+    return Positioned(
+      bottom: 65.0,
+      right: mWidth /2,
+      child: Container(
+        color: widget.chartColors.resetReloadBackgroundColor,
+        padding: EdgeInsets.symmetric(horizontal: 4.0),
+        child: GestureDetector(
+          onTap: (){
+            mScrollX = 0.0;
+            mScaleX = 1.0;
+            isScale = false;
+            notifyChanged();
+          }, child: Icon(Icons.refresh, size: 16.0, color: widget.chartColors.resetReloadForegroundColor,),),
+      ),);
   }
 }

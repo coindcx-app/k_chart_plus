@@ -349,32 +349,34 @@ class ChartPainter extends BaseChartPainter {
     //plot maxima and minima
     double x = translateXtoX(getX(mMainMinIndex));
     double y = getMainY(mMainLowMinValue);
-    if (x < mWidth / 2) {
-      //draw right
-      TextPainter tp = getTextPainter(
-          "── " + mMainLowMinValue.toStringAsFixed(fixedLength),
-          chartColors.minColor);
-      tp.paint(canvas, Offset(x, y - tp.height / 2));
-    } else {
-      TextPainter tp = getTextPainter(
-          mMainLowMinValue.toStringAsFixed(fixedLength) + " ──",
-          chartColors.minColor);
-      tp.paint(canvas, Offset(x - tp.width, y - tp.height / 2));
-    }
+    ///new code for low
+    TextPainter tp = getTextPainter(
+            "Low " + mMainLowMinValue.toStringAsFixed(fixedLength),
+            this.chartColors.highLowPriceForegroundColor);
+    double padding = 2.0;
+        double top = y - tp.height / 2  - padding;
+
+        Paint maxPricePaint = Paint()
+          ..isAntiAlias = true
+          ..strokeWidth = this.chartStyle.nowPriceLineWidth
+          ..color = this.chartColors.highLowPriceBackgroundColor;
+        double offsetX = mWidth - tp.width;
+        canvas.drawRect(
+            Rect.fromLTRB(offsetX-4, top, offsetX + tp.width+4, top + tp.height + padding * 2),
+            maxPricePaint);
+        tp.paint(canvas, Offset(offsetX-2, top + padding));
+
+        ///new code for high
     x = translateXtoX(getX(mMainMaxIndex));
     y = getMainY(mMainHighMaxValue);
-    if (x < mWidth / 2) {
-      //draw right
-      TextPainter tp = getTextPainter(
-          "── " + mMainHighMaxValue.toStringAsFixed(fixedLength),
-          chartColors.maxColor);
-      tp.paint(canvas, Offset(x, y - tp.height / 2));
-    } else {
-      TextPainter tp = getTextPainter(
-          mMainHighMaxValue.toStringAsFixed(fixedLength) + " ──",
-          chartColors.maxColor);
-      tp.paint(canvas, Offset(x - tp.width, y - tp.height / 2));
-    }
+    top = y - tp.height / 2 - padding;
+    TextPainter lowTp = getTextPainter(
+        "High " + mMainHighMaxValue.toStringAsFixed(fixedLength),
+        this.chartColors.highLowPriceForegroundColor);
+    canvas.drawRect(
+        Rect.fromLTRB(offsetX-4, top, offsetX + tp.width+4, top + tp.height + padding * 2),
+        maxPricePaint);
+    lowTp.paint(canvas, Offset(offsetX-2, top + padding));
   }
 
   @override

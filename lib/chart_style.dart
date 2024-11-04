@@ -83,6 +83,14 @@ class ChartColors {
   Color maxColor;
   Color minColor;
 
+  /// colors for reset, reload buttons
+  Color resetReloadBackgroundColor;
+  Color resetReloadForegroundColor;
+
+  /// colors for high low prices
+  Color highLowPriceBackgroundColor;
+  Color highLowPriceForegroundColor;
+
   /// get MA color via index
   Color getMAColor(int index) {
     switch (index % 3) {
@@ -155,6 +163,14 @@ class ChartColors {
     ///The color of the maximum and minimum values in the current display
     this.maxColor = const Color(0xFF222223),
     this.minColor = const Color(0xFF222223),
+
+    /// colors for reset, reload buttons
+    this.resetReloadBackgroundColor = const Color(0xFF222223),
+    this.resetReloadForegroundColor = const Color(0xffffffff),
+
+    /// colors for high low prices
+    this.highLowPriceBackgroundColor = const Color(0xFF181F3A),
+    this.highLowPriceForegroundColor = const Color(0xFFFFFFFF),
   });
 }
 
