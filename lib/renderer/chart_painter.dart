@@ -360,7 +360,7 @@ class ChartPainter extends BaseChartPainter {
     double top = y - lowTp.height / 2  - padding;
     double lowTextOffsetX = mWidth - lowTp.width - 55;
     canvas.drawRect(Rect.fromLTRB(lowTextOffsetX - 4, top, lowTextOffsetX + lowTp.width + 4, top + lowTp.height + padding * 2), maxPricePaint);
-    lowTp.paint(canvas, Offset(lowTextOffsetX-2, top + padding));
+    lowTp.paint(canvas, Offset(lowTextOffsetX, top + padding));
     // low value
     TextPainter tp = getTextPainter(mMainLowMinValue.toStringAsFixed(fixedLength),
             this.chartColors.highLowPriceForegroundColor);
@@ -378,7 +378,7 @@ class ChartPainter extends BaseChartPainter {
     double highTop = y - highTp.height / 2  - padding;
     double highTextOffsetX = mWidth - highTp.width - 55;
     canvas.drawRect(Rect.fromLTRB(highTextOffsetX - 4, highTop, highTextOffsetX + highTp.width + 4, highTop + highTp.height + padding * 2), maxPricePaint);
-    highTp.paint(canvas, Offset(highTextOffsetX-2, highTop + padding));
+    highTp.paint(canvas, Offset(highTextOffsetX, highTop + padding));
 
     // high value
     TextPainter highValueTp = getTextPainter(mMainHighMaxValue.toStringAsFixed(fixedLength),
