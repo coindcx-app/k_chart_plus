@@ -297,7 +297,7 @@ class _KChartWidgetState extends State<KChartWidget>
               ),
               if (widget.showInfoDialog) _buildInfoDialog(),
               if(mScrollX > 30.0) _buildResetScrollButton(),
-              // _buildResetZoomButton(),
+              if(isScale) _buildResetZoomButton(),
             ],
           ),
         );
@@ -405,7 +405,7 @@ class _KChartWidgetState extends State<KChartWidget>
   Widget _buildResetScrollButton() {
     return Positioned(
         bottom: 65.0,
-        right: 80.0,
+        right: 100.0,
         child: Container(
           color: widget.chartColors.resetReloadBackgroundColor,
           padding: EdgeInsets.symmetric(horizontal: 4.0),

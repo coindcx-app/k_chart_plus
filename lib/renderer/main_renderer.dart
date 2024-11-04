@@ -256,7 +256,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
           offsetX = 0;
           break;
         case VerticalTextAlignment.right:
-          offsetX = chartRect.width - tp.width;
+          offsetX = chartRect.width - 45;
           break;
       }
 
@@ -264,7 +264,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
         tp.paint(canvas, Offset(offsetX, topPadding));
       } else {
         tp.paint(
-            canvas, Offset(offsetX, rowSpace * i - tp.height + topPadding));
+            canvas, Offset(offsetX, rowSpace * i - (tp.height / 2) + topPadding));
       }
     }
   }
