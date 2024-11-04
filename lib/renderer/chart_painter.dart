@@ -235,7 +235,7 @@ class ChartPainter extends BaseChartPainter {
         int index = indexOfTranslateX(translateX);
 
         if (datas?[index] == null) continue;
-        TextPainter tp = getTextPainter(getDate(datas![index].time), null);
+        TextPainter tp = getTextPainter(getDateBasedOnTime(datas, index), null);
         y = size.height - (mBottomPadding - tp.height) / 2 - tp.height;
         x = columnSpace * i - tp.width / 2;
         // Prevent date text out of canvas
@@ -595,5 +595,77 @@ class ChartPainter extends BaseChartPainter {
   /// Whether the point is in MainRect
   bool isInMainRect(Offset point) {
     return mMainRect.contains(point);
+  }
+
+  String getDateBasedOnTime(List<KLineEntity>? data, int index) {
+    // if (data == null || index < 0 || index >= data.length) {
+    //   return '';
+    // }
+    //
+    // final currentItem = data[index];
+    // DateTime currentTime = DateTime.fromMillisecondsSinceEpoch(currentItem.time!);
+    //
+    // // If there's no previous item, we can only return the current item's date.
+    // if (index == 0) {
+    //   return DateFormat('HH:mm').format(currentTime);
+    // }
+    //
+    // final previousItem = data[index - 1];
+    // DateTime previousTime = DateTime.fromMillisecondsSinceEpoch(previousItem.time!);
+    //
+    // // Calculate the time difference
+    // Duration difference = currentTime.difference(previousTime);
+    //
+    // // Check for date changes
+    // if (currentTime.year != previousTime.year) {
+    //   return DateFormat('yyyy').format(currentTime);
+    // }
+    // if (currentTime.month != previousTime.month) {
+    //   return DateFormat('MMM').format(currentTime);
+    // }
+    // if (currentTime.day != previousTime.day) {
+    //   return DateFormat('d').format(currentTime);
+    // }
+    //
+    // // If time difference is less than an hour
+    // if (difference.inMinutes < 60) {
+    //   return DateFormat('HH:mm').format(currentTime);
+    // }
+    //
+    // // If time difference is greater than or equal to an hour
+    // return DateFormat('d').format(currentTime);
+
+
+    if (data == null || index < 0 || index >= data.length) {
+      return '';
+    }
+
+    final currentItem = data[index];
+    DateTime currentTime = DateTime.fromMillisecondsSinceEpoch(currentItem.time!);
+
+    if (index == 0) {
+      return '${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}';
+    }
+
+    final previousItem = data[index - 1];
+    DateTime previousTime = DateTime.fromMillisecondsSinceEpoch(previousItem.time!);
+
+    Duration difference = currentTime.difference(previousTime);
+
+    if (currentTime.year != previousTime.year) {
+      return currentTime.year.toString();
+    }
+    if (currentTime.month != previousTime.month) {
+      return monthShort[currentTime.month-1];
+    }
+    if (currentTime.day != previousTime.day) {
+      return currentTime.day.toString();
+    }
+
+    if (difference.inMinutes < 60) {
+      return '${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}';
+    }
+
+    return currentTime.day.toString();
   }
 }

@@ -60,6 +60,9 @@ class KChartWidget extends StatefulWidget {
   final bool isTrendLine;
   final double xFrontPadding;
 
+  final Widget? resetIcon;
+  final Widget? scrollToEndChartIcon;
+
   KChartWidget(
     this.datas,
     this.chartStyle,
@@ -88,6 +91,8 @@ class KChartWidget extends StatefulWidget {
     this.verticalTextAlignment = VerticalTextAlignment.left,
     this.priveNowVerticalTextAlignment = VerticalTextAlignment.right,
     this.mBaseHeight = 360,
+        this.resetIcon,
+        this.scrollToEndChartIcon,
   });
 
   @override
@@ -406,31 +411,43 @@ class _KChartWidgetState extends State<KChartWidget>
     return Positioned(
         bottom: 65.0,
         right: 100.0,
-        child: Container(
-          color: widget.chartColors.resetReloadBackgroundColor,
-          padding: EdgeInsets.symmetric(horizontal: 4.0),
-          child: GestureDetector(
-            onTap: (){
-              mScrollX = 0.0;
-              notifyChanged();
-            }, child: Icon(Icons.fast_forward, size: 16.0, color: widget.chartColors.resetReloadForegroundColor,),),
-        ),);
+        child: Material(
+          elevation: 2.0,
+            color: widget.chartColors.resetReloadBackgroundColor,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: GestureDetector(
+              onTap: (){
+                mScrollX = 0.0;
+                notifyChanged();
+              }, child: widget.scrollToEndChartIcon ?? Icon(Icons.fast_forward, size: 16.0, color: widget.chartColors.resetReloadForegroundColor,),),
+          ),
+        ));
   }
 
   Widget _buildResetZoomButton() {
     return Positioned(
       bottom: 65.0,
       right: mWidth /2,
-      child: Container(
+      child: Material(
+        elevation: 2.0,
         color: widget.chartColors.resetReloadBackgroundColor,
-        padding: EdgeInsets.symmetric(horizontal: 4.0),
-        child: GestureDetector(
-          onTap: (){
-            mScrollX = 0.0;
-            mScaleX = 1.0;
-            isScale = false;
-            notifyChanged();
-          }, child: Icon(Icons.refresh, size: 16.0, color: widget.chartColors.resetReloadForegroundColor,),),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: GestureDetector(
+            onTap: (){
+              mScrollX = 0.0;
+              mScaleX = 1.0;
+              isScale = false;
+              notifyChanged();
+            }, child: widget.resetIcon ?? Icon(Icons.refresh, size: 16.0, color: widget.chartColors.resetReloadForegroundColor,),),
+        ),
       ),);
   }
 }
