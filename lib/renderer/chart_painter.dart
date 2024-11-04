@@ -349,34 +349,45 @@ class ChartPainter extends BaseChartPainter {
     //plot maxima and minima
     double x = translateXtoX(getX(mMainMinIndex));
     double y = getMainY(mMainLowMinValue);
+    const double padding = 2.0;
     ///new code for low
-    TextPainter tp = getTextPainter(
-            "Low " + mMainLowMinValue.toStringAsFixed(fixedLength),
+    Paint maxPricePaint = Paint()
+      ..isAntiAlias = true
+      ..strokeWidth = this.chartStyle.nowPriceLineWidth
+      ..color = this.chartColors.highLowPriceBackgroundColor;
+    // low text
+    TextPainter lowTp = getTextPainter('Low', this.chartColors.highLowPriceForegroundColor);
+    double top = y - lowTp.height / 2  - padding;
+    double lowTextOffsetX = mWidth - lowTp.width - 55;
+    canvas.drawRect(Rect.fromLTRB(lowTextOffsetX - 4, top, lowTextOffsetX + lowTp.width + 4, top + lowTp.height + padding * 2), maxPricePaint);
+    lowTp.paint(canvas, Offset(lowTextOffsetX-2, top + padding));
+    // low value
+    TextPainter tp = getTextPainter(mMainLowMinValue.toStringAsFixed(fixedLength),
             this.chartColors.highLowPriceForegroundColor);
-    double padding = 2.0;
-        double top = y - tp.height / 2  - padding;
 
-        Paint maxPricePaint = Paint()
-          ..isAntiAlias = true
-          ..strokeWidth = this.chartStyle.nowPriceLineWidth
-          ..color = this.chartColors.highLowPriceBackgroundColor;
-        double offsetX = mWidth - tp.width;
+        double offsetX = lowTextOffsetX + 28;//mWidth - tp.width -10;
         canvas.drawRect(
             Rect.fromLTRB(offsetX-4, top, offsetX + tp.width+4, top + tp.height + padding * 2),
             maxPricePaint);
-        tp.paint(canvas, Offset(offsetX-2, top + padding));
+        tp.paint(canvas, Offset(offsetX, top + padding));
 
-        ///new code for high
-    x = translateXtoX(getX(mMainMaxIndex));
+   ///new code for high
     y = getMainY(mMainHighMaxValue);
-    top = y - tp.height / 2 - padding;
-    TextPainter lowTp = getTextPainter(
-        "High " + mMainHighMaxValue.toStringAsFixed(fixedLength),
+    // high text
+    TextPainter highTp = getTextPainter('High', this.chartColors.highLowPriceForegroundColor);
+    double highTop = y - highTp.height / 2  - padding;
+    double highTextOffsetX = mWidth - highTp.width - 55;
+    canvas.drawRect(Rect.fromLTRB(highTextOffsetX - 4, highTop, highTextOffsetX + highTp.width + 4, highTop + highTp.height + padding * 2), maxPricePaint);
+    highTp.paint(canvas, Offset(highTextOffsetX-2, highTop + padding));
+
+    // high value
+    TextPainter highValueTp = getTextPainter(mMainHighMaxValue.toStringAsFixed(fixedLength),
         this.chartColors.highLowPriceForegroundColor);
+    double highOffsetX = highTextOffsetX + 30;
     canvas.drawRect(
-        Rect.fromLTRB(offsetX-4, top, offsetX + tp.width+4, top + tp.height + padding * 2),
+        Rect.fromLTRB(highOffsetX-4, highTop, highOffsetX + highValueTp.width+4, highTop + highValueTp.height + padding * 2),
         maxPricePaint);
-    lowTp.paint(canvas, Offset(offsetX-2, top + padding));
+    highValueTp.paint(canvas, Offset(highOffsetX, highTop + padding));
   }
 
   @override
@@ -423,10 +434,10 @@ class ChartPainter extends BaseChartPainter {
       this.chartColors.nowPriceTextColor,
     );
 
-    double offsetX = mWidth - tp.width;
+    double offsetX = mWidth - 55;
     switch (priveNowVerticalTextAlignment) {
       case VerticalTextAlignment.right:
-        offsetX = mWidth  - tp.width;
+        offsetX = mWidth-45;
         break;
       case VerticalTextAlignment.left:
         offsetX = 0;
