@@ -365,7 +365,7 @@ class ChartPainter extends BaseChartPainter {
     TextPainter tp = getTextPainter(mMainLowMinValue.toStringAsFixed(fixedLength),
             this.chartColors.highLowPriceForegroundColor);
 
-        double offsetX = lowTextOffsetX + 28;//mWidth - tp.width -10;
+        double offsetX = mWidth - 45;
         canvas.drawRect(
             Rect.fromLTRB(offsetX-4, top, offsetX + tp.width+4, top + tp.height + padding * 2),
             maxPricePaint);
@@ -383,7 +383,7 @@ class ChartPainter extends BaseChartPainter {
     // high value
     TextPainter highValueTp = getTextPainter(mMainHighMaxValue.toStringAsFixed(fixedLength),
         this.chartColors.highLowPriceForegroundColor);
-    double highOffsetX = highTextOffsetX + 30;
+    double highOffsetX = mWidth -45;
     canvas.drawRect(
         Rect.fromLTRB(highOffsetX-4, highTop, highOffsetX + highValueTp.width+4, highTop + highValueTp.height + padding * 2),
         maxPricePaint);
