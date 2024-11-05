@@ -311,12 +311,36 @@ class _KChartWidgetState extends State<KChartWidget>
               if (widget.showInfoDialog) _buildInfoDialog(),
               if(mScrollX > 30.0) _buildResetScrollButton(),
               if(mScaleX != 1.0) _buildResetZoomButton(),
-              // IconButton(icon: Icon(Icons.add), onPressed: (){
-              //   setState(() {
-              //     mScaleX = _lastScale * 1.25;
-              //     _lastScale = mScaleX;
-              //   });
-              // },)
+             Container(
+               color: widget.chartColors.resetReloadBackgroundColor.withOpacity(0.2),
+               child: Row(
+                 mainAxisSize: MainAxisSize.min,
+                 children: [
+                   IconButton(
+                     icon: Icon(Icons.remove, color: widget.chartColors.resetReloadForegroundColor.withOpacity(0.5)),
+                     visualDensity: VisualDensity.compact,
+                     onPressed: (){
+                     if(mScaleX != 1.0){
+                       setState(() {
+                         mScaleX = _lastScale / 1.25;
+                         if(mScaleX < 1.0){
+                           mScaleX = 1.0;
+                         }
+                         _lastScale = mScaleX;
+                       });
+                     }
+                   },),
+                   IconButton(icon: Icon(Icons.add, color: widget.chartColors.resetReloadForegroundColor.withOpacity(0.5),),
+                     visualDensity: VisualDensity.compact,
+                     onPressed: (){
+                     setState(() {
+                       mScaleX = _lastScale * 1.25;
+                       _lastScale = mScaleX;
+                     });
+                   },)
+                 ],
+               ),
+             )
             ],
           ),
         );
