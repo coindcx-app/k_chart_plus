@@ -311,12 +311,12 @@ class _KChartWidgetState extends State<KChartWidget>
               if (widget.showInfoDialog) _buildInfoDialog(),
               if(mScrollX > 30.0) _buildResetScrollButton(),
               if(mScaleX != 1.0) _buildResetZoomButton(),
-              IconButton(icon: Icon(Icons.add), onPressed: (){
-                setState(() {
-                  mScaleX = _lastScale * 1.25;
-                  _lastScale = mScaleX;
-                });
-              },)
+              // IconButton(icon: Icon(Icons.add), onPressed: (){
+              //   setState(() {
+              //     mScaleX = _lastScale * 1.25;
+              //     _lastScale = mScaleX;
+              //   });
+              // },)
             ],
           ),
         );
