@@ -598,6 +598,7 @@ class ChartPainter extends BaseChartPainter {
   }
 
   String getDateBasedOnTime(List<KLineEntity>? data, int index) {
+
     // if (data == null || index < 0 || index >= data.length) {
     //   return '';
     // }
@@ -644,14 +645,14 @@ class ChartPainter extends BaseChartPainter {
     DateTime currentTime = DateTime.fromMillisecondsSinceEpoch(currentItem.time!);
 
     if (index == 0) {
-      return '${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}';
+      return '${currentTime.day.toString()}-${currentTime.month.toString()}-${currentTime.year.toString()} ${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}';
     }
-
-    final previousItem = data[index - 1];
+    int minusCol = 16;
+    final previousItem = data[index - minusCol];
     DateTime previousTime = DateTime.fromMillisecondsSinceEpoch(previousItem.time!);
 
     Duration difference = currentTime.difference(previousTime);
-
+    // print("index: $index, prev index: ${index - minusCol}, currt time: ${currentTime}, prev index time: ${previousTime}, diff: $difference");
     if (currentTime.year != previousTime.year) {
       return currentTime.year.toString();
     }
@@ -662,7 +663,7 @@ class ChartPainter extends BaseChartPainter {
       return currentTime.day.toString();
     }
 
-    if (difference.inMinutes < 60) {
+    if (difference.inMinutes < 60 || currentTime.day == previousTime.day) {
       return '${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}';
     }
 
