@@ -242,6 +242,23 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
 
   @override
   void drawVerticalText(canvas, textStyle, int gridRows) {
+    // Determine the width for the vertical price area
+    double priceLabelWidth = 50.0; // Adjust this width as needed
+
+// Get the height of the canvas
+    double height = chartRect.height;
+
+// Draw the background rectangle for the price area
+    Paint backgroundPaint = Paint()
+      ..color = this.chartColors.bgColor // Set the desired background color
+      ..style = PaintingStyle.fill;
+
+// Draw the background on the right side of the chart
+    canvas.drawRect(
+        Rect.fromLTRB(chartRect.width - priceLabelWidth, 0, chartRect.width,
+            height+ 20), // Adjust the x-coordinate and width as needed
+        backgroundPaint);
+
     double rowSpace = chartRect.height / gridRows;
     for (var i = 0; i <= gridRows; ++i) {
       double value = (gridRows - i) * rowSpace / scaleY + minValue;
@@ -263,8 +280,8 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
       if (i == 0) {
         tp.paint(canvas, Offset(offsetX, topPadding));
       } else {
-        tp.paint(
-            canvas, Offset(offsetX, rowSpace * i - (tp.height / 2) + topPadding));
+        tp.paint(canvas,
+            Offset(offsetX, rowSpace * i - (tp.height / 2) + topPadding));
       }
     }
   }
@@ -282,7 +299,6 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
 
     double columnSpace = chartRect.width / gridColumns;
     for (int i = 0; i < columnSpace; i++) {
-
       canvas.drawLine(Offset(columnSpace * i, topPadding / 3),
           Offset(columnSpace * i, chartRect.bottom), gridPaint);
     }

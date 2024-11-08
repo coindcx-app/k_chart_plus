@@ -239,11 +239,28 @@ class ChartPainter extends BaseChartPainter {
         y = size.height - (mBottomPadding - tp.height) / 2 - tp.height;
         x = columnSpace * i - tp.width / 2;
         // Prevent date text out of canvas
-        if (x < 0) x = 0;
+        if (x < 0) x = 10;
         if (x > size.width - tp.width) x = size.width - tp.width;
         tp.paint(canvas, Offset(x, y));
       }
     }
+
+    // Determine the width for the vertical price area
+    double priceLabelWidth = 50.0; // Adjust this width as needed
+
+// Get the height of the canvas
+    double height = size.height;
+
+// Draw the background rectangle for the price area
+    Paint backgroundPaint = Paint()
+      ..color = this.chartColors.bgColor // Set the desired background color
+      ..style = PaintingStyle.fill;
+
+// Draw the background on the right side of the chart
+    canvas.drawRect(
+        Rect.fromLTRB(size.width - priceLabelWidth, size.height-20, size.width,
+            height), // Adjust the x-coordinate and width as needed
+        backgroundPaint);
 
 //    double translateX = xToTranslateX(0);
 //    if (translateX >= startX && translateX <= stopX) {
@@ -648,7 +665,9 @@ class ChartPainter extends BaseChartPainter {
       return '${currentTime.day.toString()}-${currentTime.month.toString()}-${currentTime.year.toString()} ${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}';
     }
     int minusCol = 16;
-    final previousItem = data[index - minusCol];
+    int _previousIndex = index - minusCol;
+    _previousIndex = _previousIndex < 0 ? 0: _previousIndex;
+    final previousItem = data[_previousIndex];
     DateTime previousTime = DateTime.fromMillisecondsSinceEpoch(previousItem.time!);
 
     Duration difference = currentTime.difference(previousTime);

@@ -72,6 +72,27 @@ class VolRenderer extends BaseChartRenderer<VolumeEntity> {
 
   @override
   void drawVerticalText(canvas, textStyle, int gridRows) {
+    // Determine the width for the vertical price area
+    double priceLabelWidth = 50.0; // Adjust this width as needed
+
+// Get the height of the canvas
+    double height = chartRect.height;
+
+// Draw the background rectangle for the price area
+    Paint backgroundPaint = Paint()
+      ..color = this.chartColors.bgColor // Set the desired background color
+      ..style = PaintingStyle.fill;
+
+// // Draw the background on the right side of the chart
+//     canvas.drawRect(
+//         Rect.fromLTRB(chartRect.width - priceLabelWidth, chartRect.top, chartRect.width, 0), // Adjust the x-coordinate and width as needed
+//         backgroundPaint
+//     );
+
+    canvas.drawRect(
+        Rect.fromLTRB(chartRect.width - priceLabelWidth, chartRect.top, chartRect.width, chartRect.bottom-0.5), // Adjust the x-coordinate and width as needed
+        backgroundPaint
+    );
     // TextSpan span =
     //     TextSpan(text: "${NumberUtil.format(maxValue)}", style: textStyle);
     // TextPainter tp = TextPainter(text: span, textDirection: TextDirection.ltr);
