@@ -91,6 +91,10 @@ class ChartColors {
   Color highLowPriceBackgroundColor;
   Color highLowPriceForegroundColor;
 
+  /// color for scaling colors
+  Color scalingControlsBackgroundColor;
+  Color scalingControlsForegroundColor;
+
   /// get MA color via index
   Color getMAColor(int index) {
     switch (index % 3) {
@@ -171,6 +175,10 @@ class ChartColors {
     /// colors for high low prices
     this.highLowPriceBackgroundColor = const Color(0xFF181F3A),
     this.highLowPriceForegroundColor = const Color(0xFFFFFFFF),
+
+    /// colors for scaling controls
+    this.scalingControlsBackgroundColor = const Color(0xFF222223),
+    this.scalingControlsForegroundColor = const Color(0xFFFFFFFF),
   });
 }
 

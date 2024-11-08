@@ -104,7 +104,8 @@ class _KChartWidgetState extends State<KChartWidget>
     with TickerProviderStateMixin {
   final StreamController<InfoWindowEntity?> mInfoWindowStream =
       StreamController<InfoWindowEntity?>();
-  double mScaleX = 1.0, mScrollX = 0.0, mSelectX = 0.0;
+  double _defaultScale = 0.8;
+  double mScaleX = 0.8, mScrollX = 0.0, mSelectX = 0.0;
   double mHeight = 0, mWidth = 0;
   AnimationController? _controller;
   Animation<double>? aniX;
@@ -150,7 +151,7 @@ class _KChartWidgetState extends State<KChartWidget>
   Widget build(BuildContext context) {
     if (widget.datas != null && widget.datas!.isEmpty) {
       mScrollX = mSelectX = 0.0;
-      mScaleX = 1.0;
+      mScaleX = _defaultScale;
     }
     final BaseDimension baseDimension = BaseDimension(
       mBaseHeight: widget.mBaseHeight,
@@ -246,19 +247,19 @@ class _KChartWidgetState extends State<KChartWidget>
           },
           onHorizontalDragCancel: () => _onDragChanged(false),
           onScaleStart: (_) {
-            print('zoom in: onscaleStart');
+            // print('zoom in: onscaleStart');
             isScale = true;
           },
           onScaleUpdate: (details) {
-            print('zoom in: onScaleUpdate linw 243');
+            // print('zoom in: onScaleUpdate linw 243');
             // if (isDrag || isLongPress) return;
-            print('zoom in: onScaleUpdate linw 245 ${details.scale}');
+            // print('zoom in: onScaleUpdate linw 245 ${details.scale}');
             mScaleX = (_lastScale * details.scale).clamp(0.5, 2.2);
-            print('onScaleUpdate $mScaleX');
+            // print('onScaleUpdate $mScaleX');
             notifyChanged();
           },
           onScaleEnd: (_) {
-            print('zoom in: onScaleEnd linw 251');
+            // print('zoom in: onScaleEnd linw 251');
             isScale = false;
             _lastScale = mScaleX;
           },
@@ -316,7 +317,7 @@ class _KChartWidgetState extends State<KChartWidget>
               ),
               if (widget.showInfoDialog) _buildInfoDialog(),
               if(mScrollX > 30.0) _buildResetScrollButton(),
-              if(mScaleX != 1.0) _buildResetZoomButton(),
+              if(mScaleX != _defaultScale) _buildResetZoomButton(),
              if(showScalingControls) _buildScalingControlsButtons(),
             ],
           ),
@@ -435,12 +436,10 @@ class _KChartWidgetState extends State<KChartWidget>
             },
             child: Material(
               elevation: 2.0,
+              borderRadius: BorderRadius.circular(4),
               color: widget.chartColors.resetReloadBackgroundColor,
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                ),
                 child: widget.scrollToEndChartIcon ?? Icon(Icons.fast_forward, size: 16.0, color: widget.chartColors.resetReloadForegroundColor,),
               ),
             ),
@@ -457,19 +456,17 @@ class _KChartWidgetState extends State<KChartWidget>
         child: GestureDetector(
           onTap: (){
             mScrollX = 0.0;
-            mScaleX = 1.0;
-            _lastScale = 1.0;
+            mScaleX = _defaultScale;
+            _lastScale = _defaultScale;
             isScale = false;
             notifyChanged();
           },
           child: Material(
             elevation: 2.0,
+            borderRadius: BorderRadius.circular(4),
             color: widget.chartColors.resetReloadBackgroundColor,
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-              ),
               child: widget.resetIcon ?? Icon(Icons.refresh, size: 16.0, color: widget.chartColors.resetReloadForegroundColor,),
             ),
           ),
@@ -480,57 +477,58 @@ class _KChartWidgetState extends State<KChartWidget>
   Widget _buildScalingControlsButtons(){
     return Positioned(
       bottom: 8,
-      left: 8,
+      left: 16,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Semantics(
             attributedLabel: AttributedString("scaleOutMiniChart"),
-            child: Material(
-              color: widget.chartColors.resetReloadBackgroundColor,
-              elevation: 2.0,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: IconButton(
-                  icon: Icon(Icons.remove, color: widget.chartColors.resetReloadForegroundColor),
-                  visualDensity: VisualDensity.compact,
-                  onPressed: (){
-                    if(mScaleX != 1.0){
-                      setState(() {
-                        mScaleX = _lastScale / 1.25;
-                        if(mScaleX < 1.0){
-                          mScaleX = 1.0;
-                        }
-                        _lastScale = mScaleX;
-                      });
+            child: GestureDetector(
+              onTap: (){
+                if(mScaleX != _defaultScale){
+                  setState(() {
+                    mScaleX = _lastScale / 1.25;
+                    if(mScaleX < _defaultScale){
+                      mScaleX = _defaultScale;
                     }
-                  },),
+                    _lastScale = mScaleX;
+                  });
+                }
+              },
+              child: Material(
+                color: widget.chartColors.scalingControlsBackgroundColor,
+                elevation: 2.0,
+                borderRadius: BorderRadius.circular(4),
+                child:SizedBox(
+                  height: 28,
+                  width: 28,
+                  child: Icon(Icons.remove, color: widget.chartColors.scalingControlsForegroundColor),
+                )
               ),
             ),
           ),
           SizedBox(width: 4.0,),
           Semantics(
             attributedLabel: AttributedString("scaleInMiniChart"),
-            child: Material(
-              color: widget.chartColors.resetReloadBackgroundColor,
-              elevation: 2.0,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
+            child: GestureDetector(
+              onTap: (){
+                setState(() {
+                  mScaleX = _lastScale * 1.25;
+                  _lastScale = mScaleX;
+                });
+              },
+              child: Material(
+                color: widget.chartColors.scalingControlsBackgroundColor,
+                elevation: 2.0,
+                borderRadius: BorderRadius.circular(4),
+                child: SizedBox(
+                  height: 28,
+                  width: 28,
+                  child:Icon(Icons.add, color: widget.chartColors.scalingControlsForegroundColor,),
+                   ),
                 ),
-                child: IconButton(icon: Icon(Icons.add, color: widget.chartColors.resetReloadForegroundColor,),
-                  visualDensity: VisualDensity.compact,
-                  onPressed: (){
-                    setState(() {
-                      mScaleX = _lastScale * 1.25;
-                      _lastScale = mScaleX;
-                    });
-                  },),
-              ),
             ),
-          )
+            ),
         ],
       ),
     );
