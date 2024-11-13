@@ -291,33 +291,45 @@ class ChartPainter extends BaseChartPainter {
     double y = getMainY(point.close);
     double x;
     bool isLeft = false;
-    if (translateXtoX(getX(index)) < mWidth / 2) {
-      isLeft = false;
-      x = 1;
-      Path path = new Path();
-      path.moveTo(x, y - r);
-      path.lineTo(x, y + r);
-      path.lineTo(textWidth + 2 * w1, y + r);
-      path.lineTo(textWidth + 2 * w1 + w2, y);
-      path.lineTo(textWidth + 2 * w1, y - r);
-      path.close();
-      canvas.drawPath(path, selectPointPaint);
-      canvas.drawPath(path, selectorBorderPaint);
-      tp.paint(canvas, Offset(x + w1, y - textHeight / 2));
-    } else {
-      isLeft = true;
-      x = mWidth - textWidth - 1 - 2 * w1 - w2;
-      Path path = new Path();
-      path.moveTo(x, y);
-      path.lineTo(x + w2, y + r);
-      path.lineTo(mWidth - 2, y + r);
-      path.lineTo(mWidth - 2, y - r);
-      path.lineTo(x + w2, y - r);
-      path.close();
-      canvas.drawPath(path, selectPointPaint);
-      canvas.drawPath(path, selectorBorderPaint);
-      tp.paint(canvas, Offset(x + w1 + w2, y - textHeight / 2));
-    }
+    // if (translateXtoX(getX(index)) < mWidth / 2) {
+    //   isLeft = false;
+    //   x = 1;
+    //   Path path = new Path();
+    //   path.moveTo(x, y - r);
+    //   path.lineTo(x, y + r);
+    //   path.lineTo(textWidth + 2 * w1, y + r);
+    //   path.lineTo(textWidth + 2 * w1 + w2, y);
+    //   path.lineTo(textWidth + 2 * w1, y - r);
+    //   path.close();
+    //   canvas.drawPath(path, selectPointPaint);
+    //   canvas.drawPath(path, selectorBorderPaint);
+    //   tp.paint(canvas, Offset(x + w1, y - textHeight / 2));
+    // } else {
+    //   isLeft = true;
+    //   x = mWidth - textWidth - 1 - 2 * w1 - w2;
+    //   Path path = new Path();
+    //   path.moveTo(x, y);
+    //   path.lineTo(x + w2, y + r);
+    //   path.lineTo(mWidth - 2, y + r);
+    //   path.lineTo(mWidth - 2, y - r);
+    //   path.lineTo(x + w2, y - r);
+    //   path.close();
+    //   canvas.drawPath(path, selectPointPaint);
+    //   canvas.drawPath(path, selectorBorderPaint);
+    //   tp.paint(canvas, Offset(x + w1 + w2, y - textHeight / 2));
+    // }
+    isLeft = true;
+    x = mWidth - textWidth - 1 - 2 * w1 - w2;
+    Path path = new Path();
+    path.moveTo(x, y);
+    path.lineTo(x + w2, y + r);
+    path.lineTo(mWidth - 2, y + r);
+    path.lineTo(mWidth - 2, y - r);
+    path.lineTo(x + w2, y - r);
+    path.close();
+    canvas.drawPath(path, selectPointPaint);
+    canvas.drawPath(path, selectorBorderPaint);
+    tp.paint(canvas, Offset(x + w1 + w2, y - textHeight / 2));
 
     TextPainter dateTp =
         getTextPainter(getDate(point.time), chartColors.crossTextColor);
@@ -366,7 +378,9 @@ class ChartPainter extends BaseChartPainter {
     if (isLine == true) return;
     //plot maxima and minima
     double x = translateXtoX(getX(mMainMinIndex));
+
     double y = getMainY(mMainLowMinValue);
+
     const double padding = 2.0;
     ///new code for low
     Paint maxPricePaint = Paint()
@@ -375,6 +389,18 @@ class ChartPainter extends BaseChartPainter {
       ..color = this.chartColors.highLowPriceBackgroundColor;
     // low text
     TextPainter lowTp = getTextPainter('Low', this.chartColors.highLowPriceForegroundColor);
+
+    // checking if low and nowPrice might overlap
+    double _nowPrice = datas!.last.close;
+    double _nowPriceY = getMainY(_nowPrice);
+    if((_nowPriceY - y).abs() < 10){
+      if(_nowPrice > mMainLowMinValue){
+        y = y+(lowTp.height + padding * 2);
+      }else{
+        y = y-(lowTp.height + padding * 2);
+      }
+    }
+
     double top = y - lowTp.height / 2  - padding;
     double lowTextOffsetX = mWidth - lowTp.width - 55;
     canvas.drawRect(Rect.fromLTRB(lowTextOffsetX - 4, top, lowTextOffsetX + lowTp.width + 4, top + lowTp.height + padding * 2), maxPricePaint);
@@ -390,10 +416,24 @@ class ChartPainter extends BaseChartPainter {
         tp.paint(canvas, Offset(offsetX, top + padding));
 
    ///new code for high
-    y = getMainY(mMainHighMaxValue);
     // high text
+    y = getMainY(mMainHighMaxValue);
     TextPainter highTp = getTextPainter('High', this.chartColors.highLowPriceForegroundColor);
+
+    // checking if High and nowPrice might overlap
+     _nowPrice = datas!.last.close;
+     _nowPriceY = getMainY(_nowPrice);
+    if((_nowPriceY - y).abs() < 10){
+      if(_nowPrice > mMainHighMaxValue){
+        y = y+(highTp.height + padding * 2);
+      }else{
+        y = y-(highTp.height + padding * 2);
+      }
+    }
+
     double highTop = y - highTp.height / 2  - padding;
+
+
     double highTextOffsetX = mWidth - highTp.width - 55;
     canvas.drawRect(Rect.fromLTRB(highTextOffsetX - 4, highTop, highTextOffsetX + highTp.width + 4, highTop + highTp.height + padding * 2), maxPricePaint);
     highTp.paint(canvas, Offset(highTextOffsetX, highTop + padding));
