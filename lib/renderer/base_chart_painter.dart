@@ -36,7 +36,7 @@ abstract class BaseChartPainter extends CustomPainter {
   // padding
   double mTopPadding = 30.0, mBottomPadding = 20.0, mChildPadding = 12.0;
   // grid: rows - columns
-  int mGridRows = 4, mGridColumns = 4;
+  int mGridRows = 8, mGridColumns = 6;
   int mStartIndex = 0, mStopIndex = 0;
   double mMainMaxValue = double.minPositive, mMainMinValue = double.maxFinite;
   double mVolMaxValue = double.minPositive, mVolMinValue = double.maxFinite;

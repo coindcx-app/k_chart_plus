@@ -211,8 +211,8 @@ class ChartStyle {
   double nowPriceLineSpan = 3.5;
   double nowPriceLineWidth = 1;
 
-  int gridRows = 4;
-  int gridColumns = 4;
+  int gridRows = 8;
+  int gridColumns = 6;
 
   ///customize the time below
   List<String>? dateTimeFormat;

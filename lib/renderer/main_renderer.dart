@@ -288,7 +288,7 @@ class MainRenderer extends BaseChartRenderer<CandleEntity> {
 
   @override
   void drawGrid(Canvas canvas, int gridRows, int gridColumns) {
-   final int gridRows = 4, gridColumns = 4;
+   final int gridRows = 8, gridColumns = 6;
     double rowSpace = chartRect.height / gridRows;
     Paint rowPaint = gridPaint;
     double rowWidth = chartRect.width - 50;

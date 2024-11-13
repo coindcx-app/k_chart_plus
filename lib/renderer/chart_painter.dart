@@ -1,5 +1,6 @@
 import 'dart:async' show StreamSink;
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:k_chart_plus/utils/number_util.dart';
 import '../entity/info_window_entity.dart';
 import '../entity/k_line_entity.dart';
@@ -595,11 +596,12 @@ class ChartPainter extends BaseChartPainter {
     return tp;
   }
 
-  String getDate(int? date) => dateFormat(
-        DateTime.fromMillisecondsSinceEpoch(
-            date ?? DateTime.now().millisecondsSinceEpoch),
-        mFormats,
-      );
+  String getDate(int? date) {
+    intl.DateFormat dateFormat = intl.DateFormat("dd MMM ''yy   HH:mm");
+    String formattedDate = dateFormat.format(DateTime.fromMillisecondsSinceEpoch(
+        date ?? DateTime.now().millisecondsSinceEpoch));
+    return formattedDate;
+  }
 
   double getMainY(double y) => mMainRenderer.getY(y);
 
