@@ -351,24 +351,40 @@ class _KChartWidgetState extends State<KChartWidget>
                 print('on vertical drag down');
               },
               onVerticalDragUpdate: (details) {
-                if (isUpdatingChart) {
-                  return;
+                double distance = details.delta.dy;
+                print("HelloRP : onVerticalDragUpdate distance $distance");
+                double rowSpace = mHeight / 8;
+                if (chartMinValue != null) {
+                  chartMinValue = chartMinValue! + distance * rowSpace;
+                } else {
+                  chartMinValue = actualChartMinValue;
                 }
-                isUpdatingChart = true;
-                Future.delayed(Duration(seconds: 1), () {
-                  isUpdatingChart = true;
-                  print("HelloRP : vertical drag x:" +
-                      details.globalPosition.dx.toString() +
-                      " & y:" +
-                      details.globalPosition.dy.toString());
-                  if (chartMinValue != null) {
-                    chartMinValue = chartMinValue! + 600;
-                  } else {
-                    chartMinValue = actualChartMaxValue;
-                  }
+                if (chartMaxValue != null) {
+                  chartMaxValue = chartMaxValue! + distance * rowSpace;
+                } else {
+                  chartMaxValue = actualChartMaxValue;
+                }
+                Future.delayed(Duration.zero, () {
                   notifyChanged();
-                  isUpdatingChart = false;
                 });
+                // if (isUpdatingChart) {
+                //   return;
+                // }
+                // isUpdatingChart = true;
+                // Future.delayed(Duration(seconds: 1), () {
+                //   isUpdatingChart = true;
+                //   print("HelloRP : vertical drag x:" +
+                //       details.globalPosition.dx.toString() +
+                //       " & y:" +
+                //       details.globalPosition.dy.toString());
+                //   if (chartMinValue != null) {
+                //     chartMinValue = chartMinValue! + 600;
+                //   } else {
+                //     chartMinValue = actualChartMaxValue;
+                //   }
+                //   notifyChanged();
+                //   isUpdatingChart = false;
+                // });
               },
               onVerticalDragCancel: () {
                 print('on vertical drag cancel');
