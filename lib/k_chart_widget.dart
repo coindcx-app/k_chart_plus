@@ -92,8 +92,8 @@ class KChartWidget extends StatefulWidget {
     this.verticalTextAlignment = VerticalTextAlignment.left,
     this.priveNowVerticalTextAlignment = VerticalTextAlignment.right,
     this.mBaseHeight = 360,
-        this.resetIcon,
-        this.scrollToEndChartIcon,
+    this.resetIcon,
+    this.scrollToEndChartIcon,
   });
 
   @override
@@ -106,6 +106,8 @@ class _KChartWidgetState extends State<KChartWidget>
       StreamController<InfoWindowEntity?>();
   double _defaultScale = 0.8;
   double mScaleX = 0.8, mScrollX = 0.0, mSelectX = 0.0, mScaleY = 1.0;
+  double? chartMinValue, chartMaxValue;
+  double actualChartMinValue = 0, actualChartMaxValue = 0;
   double mHeight = 0, mWidth = 0;
   AnimationController? _controller;
   Animation<double>? aniX;
@@ -139,6 +141,8 @@ class _KChartWidgetState extends State<KChartWidget>
     super.didChangeDependencies();
   }
 
+  bool isUpdatingChart = false;
+
   @override
   void dispose() {
     mInfoWindowStream.sink.close();
@@ -169,6 +173,21 @@ class _KChartWidgetState extends State<KChartWidget>
       selectY: mSelectY, //For TrendLine
       datas: widget.datas,
       scaleX: mScaleX,
+      chartMaxValue: chartMaxValue,
+      chartMinValue: chartMinValue,
+      onChartMinMaxUpdates: ({required chartMaxValue, required chartMinValue}) {
+        Future.delayed(Duration(seconds: 1), () {
+          if (chartMinValue != actualChartMinValue) {
+            print("HelloRP : updated $chartMinValue");
+            actualChartMinValue = chartMinValue;
+            notifyChanged();
+          }
+          if (chartMaxValue != actualChartMaxValue) {
+            actualChartMaxValue = chartMaxValue;
+            notifyChanged();
+          }
+        });
+      },
       scrollX: mScrollX,
       selectX: mSelectX,
       isLongPass: isLongPress,
@@ -220,7 +239,8 @@ class _KChartWidgetState extends State<KChartWidget>
                 if (waitingForOtherPairofCords) {
                   var a = lines.last;
                   lines.removeLast();
-                  lines.add(TrendLine(a.p1, p1, trendLineMax!, trendLineScale!));
+                  lines
+                      .add(TrendLine(a.p1, p1, trendLineMax!, trendLineScale!));
                   waitingForOtherPairofCords = false;
                 } else {
                   waitingForOtherPairofCords = true;
@@ -229,13 +249,13 @@ class _KChartWidgetState extends State<KChartWidget>
               }
             },
             onHorizontalDragDown: (details) {
-              Future.delayed(Duration(milliseconds: 500), (){
-                 if(isScale){
-                   isOnTap = false;
-                   _stopAnimation();
-                   _onDragChanged(true);
-                 }
-               });
+              Future.delayed(Duration(milliseconds: 500), () {
+                if (isScale) {
+                  isOnTap = false;
+                  _stopAnimation();
+                  _onDragChanged(true);
+                }
+              });
             },
             onHorizontalDragUpdate: (details) {
               // if (isScale || isLongPress) return;
@@ -250,23 +270,6 @@ class _KChartWidgetState extends State<KChartWidget>
               _onFling(velocity);
             },
             onHorizontalDragCancel: () => _onDragChanged(false),
-            onScaleStart: (_) {
-              // print('zoom in: onscaleStart');
-              isScale = true;
-            },
-            onScaleUpdate: (details) {
-              // print('zoom in: onScaleUpdate linw 243');
-              // if (isDrag || isLongPress) return;
-              // print('zoom in: onScaleUpdate linw 245 ${details.scale}');
-              mScaleX = (_lastScale * details.scale).clamp(0.5, 2.2);
-              // print('onScaleUpdate $mScaleX');
-              notifyChanged();
-            },
-            onScaleEnd: (_) {
-              // print('zoom in: onScaleEnd linw 251');
-              isScale = false;
-              _lastScale = mScaleX;
-            },
             onLongPressStart: (details) {
               isOnTap = false;
               isLongPress = true;
@@ -314,21 +317,63 @@ class _KChartWidgetState extends State<KChartWidget>
               notifyChanged();
             },
             child: GestureDetector(
-              onVerticalDragStart: (details){
-                print('on vertical drag start');
-                if(isScale || isLongPress) return;
+              onScaleStart: (_) {
+                print('zoom in: onscaleStart');
                 isScale = true;
               },
-              onVerticalDragDown: (details){
+              onScaleUpdate: (details) {
+                print('zoom in: onScaleUpdate linw 243');
+                if (isDrag || isLongPress) return;
+                print('zoom in: onScaleUpdate linw 245 ${details.scale}');
+                // mScaleX = (_lastScale * details.scale).clamp(0.5, 2.2);
+                // print('onScaleUpdate $mScaleX');
+                if (mScaleX != _defaultScale) {
+                  mScaleX = _lastScale / 1.25;
+                  if (mScaleX < _defaultScale) {
+                    mScaleX = _defaultScale;
+                  }
+                  _lastScale = mScaleX;
+                  notifyChanged();
+                }
+                // notifyChanged();
+              },
+              onScaleEnd: (_) {
+                print('zoom in: onScaleEnd linw 251');
+                isScale = false;
+                _lastScale = mScaleX;
+              },
+              onVerticalDragStart: (details) {
+                print('on vertical drag start');
+                if (isScale || isLongPress) return;
+                isScale = true;
+              },
+              onVerticalDragDown: (details) {
                 print('on vertical drag down');
               },
-              onVerticalDragUpdate: (details){
-                print('on vertical drag update ${details}');
+              onVerticalDragUpdate: (details) {
+                if (isUpdatingChart) {
+                  return;
+                }
+                isUpdatingChart = true;
+                Future.delayed(Duration(seconds: 1), () {
+                  isUpdatingChart = true;
+                  print("HelloRP : vertical drag x:" +
+                      details.globalPosition.dx.toString() +
+                      " & y:" +
+                      details.globalPosition.dy.toString());
+                  if (chartMinValue != null) {
+                    chartMinValue = chartMinValue! + 600;
+                  } else {
+                    chartMinValue = actualChartMaxValue;
+                  }
+                  notifyChanged();
+                  isUpdatingChart = false;
+                });
               },
               onVerticalDragCancel: () {
                 print('on vertical drag cancel');
               },
-              onVerticalDragEnd: (details){
+              onVerticalDragEnd: (details) {
                 print('on vertical drag end');
               },
               child: Stack(
@@ -338,9 +383,9 @@ class _KChartWidgetState extends State<KChartWidget>
                     painter: _painter,
                   ),
                   if (widget.showInfoDialog) _buildInfoDialog(),
-                  if(mScrollX > 30.0) _buildResetScrollButton(),
-                  if(mScaleX != _defaultScale) _buildResetZoomButton(),
-                 if(showScalingControls) _buildScalingControlsButtons(),
+                  if (mScrollX > 30.0) _buildResetScrollButton(),
+                  if (mScaleX != _defaultScale) _buildResetZoomButton(),
+                  if (showScalingControls) _buildScalingControlsButtons(),
                 ],
               ),
             ),
@@ -401,7 +446,11 @@ class _KChartWidgetState extends State<KChartWidget>
     _controller!.forward();
   }
 
-  void notifyChanged() => setState(() {});
+  void notifyChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   late List<String> infos;
 
@@ -446,7 +495,7 @@ class _KChartWidgetState extends State<KChartWidget>
       },
     );
   }
-  
+
   Widget _buildResetScrollButton() {
     return Positioned(
         bottom: 65.0,
@@ -454,7 +503,7 @@ class _KChartWidgetState extends State<KChartWidget>
         child: Semantics(
           attributedLabel: AttributedString("resetScrollingMiniChart"),
           child: GestureDetector(
-            onTap: (){
+            onTap: () {
               mScrollX = 0.0;
               notifyChanged();
             },
@@ -464,7 +513,12 @@ class _KChartWidgetState extends State<KChartWidget>
               color: widget.chartColors.resetReloadBackgroundColor,
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
-                child: widget.scrollToEndChartIcon ?? Icon(Icons.fast_forward, size: 16.0, color: widget.chartColors.resetReloadForegroundColor,),
+                child: widget.scrollToEndChartIcon ??
+                    Icon(
+                      Icons.fast_forward,
+                      size: 16.0,
+                      color: widget.chartColors.resetReloadForegroundColor,
+                    ),
               ),
             ),
           ),
@@ -474,11 +528,11 @@ class _KChartWidgetState extends State<KChartWidget>
   Widget _buildResetZoomButton() {
     return Positioned(
       bottom: 65.0,
-      right: mWidth /2,
+      right: mWidth / 2,
       child: Semantics(
         attributedLabel: AttributedString("resetScalingMiniChart"),
         child: GestureDetector(
-          onTap: (){
+          onTap: () {
             mScrollX = 0.0;
             mScaleX = _defaultScale;
             _lastScale = _defaultScale;
@@ -491,14 +545,20 @@ class _KChartWidgetState extends State<KChartWidget>
             color: widget.chartColors.resetReloadBackgroundColor,
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
-              child: widget.resetIcon ?? Icon(Icons.refresh, size: 16.0, color: widget.chartColors.resetReloadForegroundColor,),
+              child: widget.resetIcon ??
+                  Icon(
+                    Icons.refresh,
+                    size: 16.0,
+                    color: widget.chartColors.resetReloadForegroundColor,
+                  ),
             ),
           ),
         ),
-      ),);
+      ),
+    );
   }
 
-  Widget _buildScalingControlsButtons(){
+  Widget _buildScalingControlsButtons() {
     return Positioned(
       bottom: 8,
       left: 16,
@@ -508,38 +568,39 @@ class _KChartWidgetState extends State<KChartWidget>
           Semantics(
             attributedLabel: AttributedString("scaleOutMiniChart"),
             child: GestureDetector(
-              onTap: (){
-                if(mScaleX != _defaultScale){
-                  setState(() {
-                    mScaleX = _lastScale / 1.25;
-                    if(mScaleX < _defaultScale){
-                      mScaleX = _defaultScale;
-                    }
-                    _lastScale = mScaleX;
-                  });
+              onTap: () {
+                if (mScaleX != _defaultScale) {
+                  mScaleX = _lastScale / 1.25;
+                  if (mScaleX < _defaultScale) {
+                    mScaleX = _defaultScale;
+                  }
+                  _lastScale = mScaleX;
+                  notifyChanged();
                 }
               },
               child: Material(
-                color: widget.chartColors.scalingControlsBackgroundColor,
-                elevation: 2.0,
-                borderRadius: BorderRadius.circular(4),
-                child:SizedBox(
-                  height: 28,
-                  width: 28,
-                  child: Icon(Icons.remove, color: widget.chartColors.scalingControlsForegroundColor),
-                )
-              ),
+                  color: widget.chartColors.scalingControlsBackgroundColor,
+                  elevation: 2.0,
+                  borderRadius: BorderRadius.circular(4),
+                  child: SizedBox(
+                    height: 28,
+                    width: 28,
+                    child: Icon(Icons.remove,
+                        color:
+                            widget.chartColors.scalingControlsForegroundColor),
+                  )),
             ),
           ),
-          SizedBox(width: 4.0,),
+          SizedBox(
+            width: 4.0,
+          ),
           Semantics(
             attributedLabel: AttributedString("scaleInMiniChart"),
             child: GestureDetector(
-              onTap: (){
-                setState(() {
-                  mScaleX = _lastScale * 1.25;
-                  _lastScale = mScaleX;
-                });
+              onTap: () {
+                mScaleX = _lastScale * 1.25;
+                _lastScale = mScaleX;
+                notifyChanged();
               },
               child: Material(
                 color: widget.chartColors.scalingControlsBackgroundColor,
@@ -548,11 +609,14 @@ class _KChartWidgetState extends State<KChartWidget>
                 child: SizedBox(
                   height: 28,
                   width: 28,
-                  child:Icon(Icons.add, color: widget.chartColors.scalingControlsForegroundColor,),
-                   ),
+                  child: Icon(
+                    Icons.add,
+                    color: widget.chartColors.scalingControlsForegroundColor,
+                  ),
                 ),
+              ),
             ),
-            ),
+          ),
         ],
       ),
     );
@@ -563,7 +627,7 @@ class _KChartWidgetState extends State<KChartWidget>
     notifyChanged();
     _showScalingControlsTimer?.cancel();
     _showScalingControlsTimer = Timer(Duration(seconds: 5), () {
-      if(showScalingControls){
+      if (showScalingControls) {
         showScalingControls = false;
         notifyChanged();
       }

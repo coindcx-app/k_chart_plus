@@ -24,6 +24,9 @@ abstract class BaseChartPainter extends CustomPainter {
   bool isOnTap;
   bool isLine;
 
+  double? chartMinValue;
+  double? chartMaxValue;
+
   /// Rectangle box of main chart
   late Rect mMainRect;
 
@@ -69,6 +72,8 @@ abstract class BaseChartPainter extends CustomPainter {
     this.isOnTap = false,
     this.mainState = MainState.MA,
     this.volHidden = false,
+    this.chartMinValue,
+    this.chartMaxValue,
     this.isTapShowInfoDialog = false,
     this.secondaryStateLi = const <SecondaryState>{},
     this.isLine = false,
@@ -226,6 +231,12 @@ abstract class BaseChartPainter extends CustomPainter {
 
   /// compute maximum and minimum value
   void getMainMaxMinValue(KLineEntity item, int i) {
+    if (chartMinValue != null) {
+      mMainMinValue = chartMinValue!;
+    }
+    if (chartMaxValue != null) {
+      mMainMaxValue = chartMaxValue!;
+    }
     double maxPrice, minPrice;
     if (mainState == MainState.MA) {
       maxPrice = max(item.high, _findMaxMA(item.maValueList ?? [0]));

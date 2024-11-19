@@ -51,6 +51,7 @@ class ChartPainter extends BaseChartPainter {
   final VerticalTextAlignment verticalTextAlignment;
   final VerticalTextAlignment priveNowVerticalTextAlignment;
   final BaseDimension baseDimension;
+  Function({required double chartMinValue, required double chartMaxValue})? onChartMinMaxUpdates;
 
   ChartPainter(
     this.chartStyle,
@@ -67,6 +68,8 @@ class ChartPainter extends BaseChartPainter {
     required xFrontPadding,
     required this.baseDimension,
     isOnTap,
+    super.chartMaxValue,
+    super.chartMinValue,
     isTapShowInfoDialog,
     required this.verticalTextAlignment,
     required this.priveNowVerticalTextAlignment,
@@ -74,6 +77,7 @@ class ChartPainter extends BaseChartPainter {
     volHidden,
     secondaryStateLi,
     bool isLine = false,
+    this.onChartMinMaxUpdates,
     this.hideGrid = false,
     this.showNowPrice = true,
     this.fixedLength = 2,
@@ -127,6 +131,10 @@ class ChartPainter extends BaseChartPainter {
       verticalTextAlignment,
       maDayList,
     );
+    if (onChartMinMaxUpdates != null) {
+      onChartMinMaxUpdates!(
+          chartMaxValue: mMainMinValue, chartMinValue: mMainMaxValue);
+    }
     if (mVolRect != null) {
       mVolRenderer = VolRenderer(mVolRect!, mVolMaxValue, mVolMinValue,
           mChildPadding, fixedLength, this.chartStyle, this.chartColors);
@@ -259,8 +267,8 @@ class ChartPainter extends BaseChartPainter {
 
 // Draw the background on the right side of the chart
     canvas.drawRect(
-        Rect.fromLTRB(size.width - priceLabelWidth, size.height-20, size.width,
-            height), // Adjust the x-coordinate and width as needed
+        Rect.fromLTRB(size.width - priceLabelWidth, size.height - 20,
+            size.width, height), // Adjust the x-coordinate and width as needed
         backgroundPaint);
 
 //    double translateX = xToTranslateX(0);
@@ -382,68 +390,86 @@ class ChartPainter extends BaseChartPainter {
     double y = getMainY(mMainLowMinValue);
 
     const double padding = 2.0;
+
     ///new code for low
     Paint maxPricePaint = Paint()
       ..isAntiAlias = true
       ..strokeWidth = this.chartStyle.nowPriceLineWidth
       ..color = this.chartColors.highLowPriceBackgroundColor;
     // low text
-    TextPainter lowTp = getTextPainter('Low', this.chartColors.highLowPriceForegroundColor);
+    TextPainter lowTp =
+        getTextPainter('Low', this.chartColors.highLowPriceForegroundColor);
 
     // checking if low and nowPrice might overlap
     double _nowPrice = datas!.last.close;
     double _nowPriceY = getMainY(_nowPrice);
-    if((_nowPriceY - y).abs() < 10){
-      if(_nowPrice > mMainLowMinValue){
-        y = y+(lowTp.height + padding * 2);
-      }else{
-        y = y-(lowTp.height + padding * 2);
+    if ((_nowPriceY - y).abs() < 10) {
+      if (_nowPrice > mMainLowMinValue) {
+        y = y + (lowTp.height + padding * 2);
+      } else {
+        y = y - (lowTp.height + padding * 2);
       }
     }
 
-    double top = y - lowTp.height / 2  - padding;
+    double top = y - lowTp.height / 2 - padding;
     double lowTextOffsetX = mWidth - lowTp.width - 55;
-    canvas.drawRect(Rect.fromLTRB(lowTextOffsetX - 4, top, lowTextOffsetX + lowTp.width + 4, top + lowTp.height + padding * 2), maxPricePaint);
+    canvas.drawRect(
+        Rect.fromLTRB(lowTextOffsetX - 4, top, lowTextOffsetX + lowTp.width + 4,
+            top + lowTp.height + padding * 2),
+        maxPricePaint);
     lowTp.paint(canvas, Offset(lowTextOffsetX, top + padding));
     // low value
-    TextPainter tp = getTextPainter(mMainLowMinValue.toStringAsFixed(fixedLength),
-            this.chartColors.highLowPriceForegroundColor);
+    TextPainter tp = getTextPainter(
+        mMainLowMinValue.toStringAsFixed(fixedLength),
+        this.chartColors.highLowPriceForegroundColor);
 
-        double offsetX = mWidth - 45;
-        canvas.drawRect(
-            Rect.fromLTRB(offsetX-4, top, offsetX + tp.width+4, top + tp.height + padding * 2),
-            maxPricePaint);
-        tp.paint(canvas, Offset(offsetX, top + padding));
+    double offsetX = mWidth - 45;
+    canvas.drawRect(
+        Rect.fromLTRB(offsetX - 4, top, offsetX + tp.width + 4,
+            top + tp.height + padding * 2),
+        maxPricePaint);
+    tp.paint(canvas, Offset(offsetX, top + padding));
 
-   ///new code for high
+    ///new code for high
     // high text
     y = getMainY(mMainHighMaxValue);
-    TextPainter highTp = getTextPainter('High', this.chartColors.highLowPriceForegroundColor);
+    TextPainter highTp =
+        getTextPainter('High', this.chartColors.highLowPriceForegroundColor);
 
     // checking if High and nowPrice might overlap
-     _nowPrice = datas!.last.close;
-     _nowPriceY = getMainY(_nowPrice);
-    if((_nowPriceY - y).abs() < 10){
-      if(_nowPrice > mMainHighMaxValue){
-        y = y+(highTp.height + padding * 2);
-      }else{
-        y = y-(highTp.height + padding * 2);
+    _nowPrice = datas!.last.close;
+    _nowPriceY = getMainY(_nowPrice);
+    if ((_nowPriceY - y).abs() < 10) {
+      if (_nowPrice > mMainHighMaxValue) {
+        y = y + (highTp.height + padding * 2);
+      } else {
+        y = y - (highTp.height + padding * 2);
       }
     }
 
-    double highTop = y - highTp.height / 2  - padding;
-
+    double highTop = y - highTp.height / 2 - padding;
 
     double highTextOffsetX = mWidth - highTp.width - 55;
-    canvas.drawRect(Rect.fromLTRB(highTextOffsetX - 4, highTop, highTextOffsetX + highTp.width + 4, highTop + highTp.height + padding * 2), maxPricePaint);
+    canvas.drawRect(
+        Rect.fromLTRB(
+            highTextOffsetX - 4,
+            highTop,
+            highTextOffsetX + highTp.width + 4,
+            highTop + highTp.height + padding * 2),
+        maxPricePaint);
     highTp.paint(canvas, Offset(highTextOffsetX, highTop + padding));
 
     // high value
-    TextPainter highValueTp = getTextPainter(mMainHighMaxValue.toStringAsFixed(fixedLength),
+    TextPainter highValueTp = getTextPainter(
+        mMainHighMaxValue.toStringAsFixed(fixedLength),
         this.chartColors.highLowPriceForegroundColor);
-    double highOffsetX = mWidth -45;
+    double highOffsetX = mWidth - 45;
     canvas.drawRect(
-        Rect.fromLTRB(highOffsetX-4, highTop, highOffsetX + highValueTp.width+4, highTop + highValueTp.height + padding * 2),
+        Rect.fromLTRB(
+            highOffsetX - 4,
+            highTop,
+            highOffsetX + highValueTp.width + 4,
+            highTop + highValueTp.height + padding * 2),
         maxPricePaint);
     highValueTp.paint(canvas, Offset(highOffsetX, highTop + padding));
   }
@@ -495,7 +521,7 @@ class ChartPainter extends BaseChartPainter {
     double offsetX = mWidth - 55;
     switch (priveNowVerticalTextAlignment) {
       case VerticalTextAlignment.right:
-        offsetX = mWidth-45;
+        offsetX = mWidth - 45;
         break;
       case VerticalTextAlignment.left:
         offsetX = 0;
@@ -503,11 +529,12 @@ class ChartPainter extends BaseChartPainter {
     }
 
     double padding = 2.0;
-    double top = y - tp.height / 2  - padding;
+    double top = y - tp.height / 2 - padding;
     canvas.drawRect(
-        Rect.fromLTRB(offsetX-4, top, offsetX + tp.width+4, top + tp.height + padding * 2),
+        Rect.fromLTRB(offsetX - 4, top, offsetX + tp.width + 4,
+            top + tp.height + padding * 2),
         nowPricePaint);
-    tp.paint(canvas, Offset(offsetX-2, top + padding));
+    tp.paint(canvas, Offset(offsetX - 2, top + padding));
   }
 
   //For TrendLine
@@ -582,8 +609,10 @@ class ChartPainter extends BaseChartPainter {
     // canvas.drawLine(Offset(x, mTopPadding),
     //     Offset(x, size.height - mBottomPadding), paintY);
     // K-line chart vertical dashed line
-    final double dashWidth = this.chartStyle.nowPriceLineLength; // Width of each dash
-    final double dashSpace = this.chartStyle.nowPriceLineSpan + this.chartStyle.nowPriceLineLength; // Space between dashes
+    final double dashWidth =
+        this.chartStyle.nowPriceLineLength; // Width of each dash
+    final double dashSpace = this.chartStyle.nowPriceLineSpan +
+        this.chartStyle.nowPriceLineLength; // Space between dashes
 
     double startY = mTopPadding;
     // Calculate the total height of the line to draw
@@ -607,10 +636,7 @@ class ChartPainter extends BaseChartPainter {
     double startX = 0;
     final max = -mTranslateX + mWidth / scaleX;
     while (startX < max) {
-      canvas.drawLine(
-          Offset(startX, y),
-          Offset(startX + dashWidth, y),
-          paintX);
+      canvas.drawLine(Offset(startX, y), Offset(startX + dashWidth, y), paintX);
       startX += dashWidth + dashSpace;
     }
     if (scaleX >= 1) {
@@ -638,8 +664,9 @@ class ChartPainter extends BaseChartPainter {
 
   String getDate(int? date) {
     intl.DateFormat dateFormat = intl.DateFormat("dd MMM ''yy   HH:mm");
-    String formattedDate = dateFormat.format(DateTime.fromMillisecondsSinceEpoch(
-        date ?? DateTime.now().millisecondsSinceEpoch));
+    String formattedDate = dateFormat.format(
+        DateTime.fromMillisecondsSinceEpoch(
+            date ?? DateTime.now().millisecondsSinceEpoch));
     return formattedDate;
   }
 
@@ -657,7 +684,6 @@ class ChartPainter extends BaseChartPainter {
   }
 
   String getDateBasedOnTime(List<KLineEntity>? data, int index) {
-
     // if (data == null || index < 0 || index >= data.length) {
     //   return '';
     // }
@@ -695,22 +721,23 @@ class ChartPainter extends BaseChartPainter {
     // // If time difference is greater than or equal to an hour
     // return DateFormat('d').format(currentTime);
 
-
     if (data == null || index < 0 || index >= data.length) {
       return '';
     }
 
     final currentItem = data[index];
-    DateTime currentTime = DateTime.fromMillisecondsSinceEpoch(currentItem.time!);
+    DateTime currentTime =
+        DateTime.fromMillisecondsSinceEpoch(currentItem.time!);
 
     if (index == 0) {
       return '${currentTime.day.toString()}-${currentTime.month.toString()}-${currentTime.year.toString()} ${currentTime.hour.toString().padLeft(2, '0')}:${currentTime.minute.toString().padLeft(2, '0')}';
     }
     int minusCol = 16;
     int _previousIndex = index - minusCol;
-    _previousIndex = _previousIndex < 0 ? 0: _previousIndex;
+    _previousIndex = _previousIndex < 0 ? 0 : _previousIndex;
     final previousItem = data[_previousIndex];
-    DateTime previousTime = DateTime.fromMillisecondsSinceEpoch(previousItem.time!);
+    DateTime previousTime =
+        DateTime.fromMillisecondsSinceEpoch(previousItem.time!);
 
     Duration difference = currentTime.difference(previousTime);
     // print("index: $index, prev index: ${index - minusCol}, currt time: ${currentTime}, prev index time: ${previousTime}, diff: $difference");
@@ -718,7 +745,7 @@ class ChartPainter extends BaseChartPainter {
       return currentTime.year.toString();
     }
     if (currentTime.month != previousTime.month) {
-      return monthShort[currentTime.month-1];
+      return monthShort[currentTime.month - 1];
     }
     if (currentTime.day != previousTime.day) {
       return currentTime.day.toString();
